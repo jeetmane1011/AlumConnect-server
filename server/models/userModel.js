@@ -16,6 +16,11 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    isAlumni: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   { timestaps: true }
 );
