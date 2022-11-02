@@ -21,6 +21,7 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    details: { type: mongoose.Schema.Types.ObjectId, ref: "Detail" }
   },
   { timestaps: true }
 );

@@ -19,6 +19,37 @@ const allUsers = asyncHandler(async (req, res) => {
   res.send(users);
 });
 
+const getUserById = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.find({ _id: req.params.userId });
+    res.json(user);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+const updateUser = asyncHandler(async(req, res)=>{
+  const { name } = req.body;
+
+  try {
+    const user = await User.findOneAndUpdate({ _id: req.params.userId }, {name: name},{new: true});
+    res.status(201).
+    json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+})
+
+
 //@description     Register new user
 //@route           POST /api/user/
 //@access          Public
@@ -82,4 +113,4 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { allUsers, registerUser, authUser};
+module.exports = { allUsers, registerUser, authUser, getUserById, updateUser};
