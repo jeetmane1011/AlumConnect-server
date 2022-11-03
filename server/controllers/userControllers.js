@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const generateToken = require("../config/generateToken");
 const cloudinary= require("../utils/cloudinary");
+// const { update } = require("../models/userModel");
 
 //@description     Get or Search all users
 //@route           GET /api/user?search=
@@ -31,7 +32,30 @@ const getUserById = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async(req, res)=>{
-  const updates = req.body;
+  let updates = req.body;
+
+  if('pic' in updates){
+    try{
+      if("url" in updates.pic){
+        if(updates.pic.url){
+          //update from db
+          const result = await cloudinary.uploader.upload(updates.pic.url,{folder: "users", width: 300, crop: "scale"});
+          updates.pic.public_id = result.public_id;
+          updates.pic.url = result.secure_url
+        }
+      } else if('public_id' in updates.pic){
+        //delete image from db
+          await cloudinary.uploader.destroy(updates.pic.public_id);
+          updates.pic = {
+            url :"https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+          }
+      }
+    }catch(err){
+      console.log(err);
+      // res.status(401);
+      throw new Error("Could not update image!!!")
+    }
+  }
 
   User.findOneAndUpdate({ _id: req.params.userId }, 
     updates,
@@ -58,7 +82,6 @@ const updateUser = asyncHandler(async(req, res)=>{
 //@access          Public
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, pic } = req.body;
-
   if (!name || !email || !password) {
     res.status(400);
     throw new Error("Please Enter all the Feilds");
@@ -71,18 +94,21 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
-  // console.log(process.env.CLOUD_NAME);
-  // const result = await cloudinary.uploader.upload(pic,{folder: "users"});
+  let result = undefined;
+
+  if(pic){
+    result = await cloudinary.uploader.upload(pic,{folder: "users", width: 300, crop: "scale"});
+  }
+
   const user = await User.create({
     name,
     email,
     password,
-    // pic: {
-    //   public_id: result.public_id,
-    //   url: result.secure_url
-    // }
-    pic
-  });
+    pic:{
+      public_id: (result && result.public_id),
+      url: (result && result.secure_url)
+    }
+  })
 
   if (user) {
     res.status(201).json({

@@ -6,17 +6,15 @@ const userSchema = mongoose.Schema(
     name: { type: "String", required: true },
     email: { type: "String", unique: true, required: true },
     password: { type: "String", required: true },
-    // pic: {
-    //   public_id: {
-    //     type: String
-    //   },
-    //   url:{
-    //     type: String,
-    //     default:
-    //       "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
-    //   },
-    // },
-    pic:{type: "String"},
+    pic: {
+      public_id: {
+        type: String, required: false
+      },
+      url:{
+        type: String, required: false, default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+      },
+      // required: true
+    },
     isAdmin: {
       type: Boolean,
       required: true,

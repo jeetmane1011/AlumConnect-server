@@ -19,9 +19,9 @@ app.get("/community", (req,res)=>{
     res.send("api is running");
 });
 
-app.use("/community/user", userRoutes);
-app.use("/community/chat", chatRoutes);
-app.use("/community/message", messageRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/message", messageRoutes);
 
 
 app.use(notFound);
