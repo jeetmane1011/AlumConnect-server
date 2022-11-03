@@ -6,11 +6,17 @@ const userSchema = mongoose.Schema(
     name: { type: "String", required: true },
     email: { type: "String", unique: true, required: true },
     password: { type: "String", required: true },
-    pic: {
-      type: "String",
-      default:
-        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
-    },
+    // pic: {
+    //   public_id: {
+    //     type: String
+    //   },
+    //   url:{
+    //     type: String,
+    //     default:
+    //       "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    //   },
+    // },
+    pic:{type: "String"},
     isAdmin: {
       type: Boolean,
       required: true,
@@ -21,7 +27,17 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
-    details: { type: mongoose.Schema.Types.ObjectId, ref: "Detail" }
+    description: { type: "String", trim: true },
+    worksAs: { type: "String" },
+    worksAt: { type: "String" },
+    facebook: { type: "String" },
+    instagram: { type: "String" },
+    linkedin: { type: "String" },
+    github: { type: "String" },
+    gender: { type: "String" },
+    age: { type: "Number" },
+    country: { type: "String", default: "India"},
+    city: {type : "String" ,default: "Mumbai"}
   },
   { timestaps: true }
 );

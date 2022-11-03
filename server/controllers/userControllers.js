@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const generateToken = require("../config/generateToken");
+const cloudinary= require("../utils/cloudinary");
 
 //@description     Get or Search all users
 //@route           GET /api/user?search=
@@ -30,10 +31,11 @@ const getUserById = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async(req, res)=>{
-  const { name } = req.body;
+  const updates = req.body;
 
-  try {
-    const user = await User.findOneAndUpdate({ _id: req.params.userId }, {name: name},{new: true});
+  User.findOneAndUpdate({ _id: req.params.userId }, 
+    updates,
+    {new: true}).then(user=>{
     res.status(201).
     json({
       _id: user._id,
@@ -43,10 +45,11 @@ const updateUser = asyncHandler(async(req, res)=>{
       pic: user.pic,
       token: generateToken(user._id),
     });
-  } catch (error) {
+  }).catch(err=>{
     res.status(400);
-    throw new Error(error.message);
-  }
+    throw new Error(err.message);
+  })
+
 })
 
 
@@ -68,11 +71,17 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
+  // console.log(process.env.CLOUD_NAME);
+  // const result = await cloudinary.uploader.upload(pic,{folder: "users"});
   const user = await User.create({
     name,
     email,
     password,
-    pic,
+    // pic: {
+    //   public_id: result.public_id,
+    //   url: result.secure_url
+    // }
+    pic
   });
 
   if (user) {
